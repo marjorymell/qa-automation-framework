@@ -1,0 +1,40 @@
+{
+  "name": "qa-automation-framework",
+  "version": "1.0.0",
+  "description": "Test automation framework with Playwright and TypeScript: API tests for ServeRest, with UI, contract and performance suites on the roadmap.",
+  "scripts": {
+    "test": "playwright test",
+    "test:api": "playwright test --project=api",
+    "report": "playwright show-report",
+    "serverest": "serverest --porta 3000 --nodoc",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "check": "npm run typecheck && npm run lint"
+  },
+  "keywords": [
+    "playwright",
+    "typescript",
+    "api-testing",
+    "test-automation",
+    "qa",
+    "serverest"
+  ],
+  "author": "Marjory Mel",
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@faker-js/faker": "^10.6.0",
+    "@playwright/test": "^1.65.1",
+    "@types/node": "^26.6.6",
+    "eslint": "^10.15.0",
+    "eslint-plugin-playwright": "^2.12.2",
+    "serverest": "^3.4.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.73.0",
+    "zod": "^4.6.7"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  }
+}
