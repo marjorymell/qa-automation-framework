@@ -6,7 +6,8 @@ import { defineConfig } from '@playwright/test';
  * Set API_BASE_URL to run against another instance, e.g. https://serverest.dev.
  */
 const port = Number(process.env.SERVEREST_PORT ?? 3000);
-const externalBaseURL = process.env.API_BASE_URL;
+// `||` rather than `??`: CI passes an empty string when no URL is given.
+const externalBaseURL = process.env.API_BASE_URL?.trim() || undefined;
 const apiBaseURL = externalBaseURL ?? `http://localhost:${port}`;
 const isCI = !!process.env.CI;
 
