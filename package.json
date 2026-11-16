@@ -1,15 +1,17 @@
 {
   "name": "qa-automation-framework",
   "version": "1.0.0",
-  "description": "Test automation framework with Playwright and TypeScript: API tests for ServeRest, with UI, contract and performance suites on the roadmap.",
+  "description": "Test automation framework with Playwright and TypeScript: API tests for ServeRest and UI tests for Automation Exercise.",
   "scripts": {
     "test": "playwright test",
     "test:api": "playwright test --project=api",
+    "test:ui": "playwright test --project=ui",
     "report": "playwright show-report",
-    "serverest": "serverest --porta 3000 --nodoc",
+    "serverest": "serverest --porta 3210 --nodoc",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "check": "npm run typecheck && npm run lint"
+    "check": "npm run typecheck && npm run lint",
+    "install:browsers": "playwright install --with-deps chromium"
   },
   "keywords": [
     "playwright",

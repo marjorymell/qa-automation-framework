@@ -45,7 +45,7 @@ API_BASE_URL=https://serverest.dev npm run test:api
 | `npm test` | Runs all Playwright projects |
 | `npm run test:api` | Runs the API suite only |
 | `npm run check` | Typecheck (`tsc`) and lint (`eslint`) |
-| `npm run serverest` | Starts ServeRest on port 3000, to explore the API by hand |
+| `npm run serverest` | Starts ServeRest on port 3210, to explore the API by hand |
 
 ## Project structure
 
