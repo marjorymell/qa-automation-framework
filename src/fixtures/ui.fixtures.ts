@@ -1,9 +1,13 @@
 import { test as base } from '@playwright/test';
 import { buildAccount } from '@src/data/factories';
 import { AccountApi } from '@src/ui/account-api';
+import { CatalogApi } from '@src/ui/catalog-api';
 import { AccountStatusPage } from '@src/ui/pages/account-status.page';
+import { CartPage } from '@src/ui/pages/cart.page';
 import { HomePage } from '@src/ui/pages/home.page';
 import { LoginPage } from '@src/ui/pages/login.page';
+import { ProductDetailsPage } from '@src/ui/pages/product-details.page';
+import { ProductsPage } from '@src/ui/pages/products.page';
 import { SignupPage } from '@src/ui/pages/signup.page';
 import type { Account } from '@src/ui/types';
 
@@ -16,6 +20,7 @@ const AD_HOSTS =
 
 interface UiFixtures {
   accountApi: AccountApi;
+  catalogApi: CatalogApi;
   /** An account registered through the API, deleted after the test. */
   account: Account;
   /** Fresh account data, not registered. Deleted after the test if a test creates it. */
@@ -24,6 +29,9 @@ interface UiFixtures {
   loginPage: LoginPage;
   signupPage: SignupPage;
   accountStatusPage: AccountStatusPage;
+  productsPage: ProductsPage;
+  productDetailsPage: ProductDetailsPage;
+  cartPage: CartPage;
 }
 
 export const test = base.extend<UiFixtures>({
@@ -34,6 +42,10 @@ export const test = base.extend<UiFixtures>({
 
   accountApi: async ({ request, baseURL }, use) => {
     await use(new AccountApi(request, baseURL!));
+  },
+
+  catalogApi: async ({ request, baseURL }, use) => {
+    await use(new CatalogApi(request, baseURL!));
   },
 
   account: async ({ accountApi }, use) => {
@@ -53,6 +65,9 @@ export const test = base.extend<UiFixtures>({
   loginPage: async ({ page }, use) => use(new LoginPage(page)),
   signupPage: async ({ page }, use) => use(new SignupPage(page)),
   accountStatusPage: async ({ page }, use) => use(new AccountStatusPage(page)),
+  productsPage: async ({ page }, use) => use(new ProductsPage(page)),
+  productDetailsPage: async ({ page }, use) => use(new ProductDetailsPage(page)),
+  cartPage: async ({ page }, use) => use(new CartPage(page)),
 });
 
 export { expect } from '@playwright/test';
