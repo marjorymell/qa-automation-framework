@@ -27,9 +27,8 @@ export default defineConfig({
   forbidOnly: isCI,
   retries: isCI ? 1 : 0,
   workers: isCI ? 4 : undefined,
-  reporter: isCI
-    ? [['github'], ['list'], ['html', { open: 'never' }]]
-    : [['list'], ['html', { open: 'never' }]],
+  // On CI each job writes a blob report; the workflow merges them into one HTML report.
+  reporter: isCI ? [['github'], ['list'], ['blob']] : [['list'], ['html', { open: 'never' }]],
 
   projects: [
     {

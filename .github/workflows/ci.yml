@@ -4,10 +4,13 @@ on:
   push:
     branches: [main]
   pull_request:
+  schedule:
+    # Daily run, to catch changes on the public sites under test.
+    - cron: '17 9 * * *'
   workflow_dispatch:
     inputs:
       api_base_url:
-        description: 'Run against this ServeRest URL instead of a local instance (e.g. https://serverest.dev)'
+        description: 'Run the API tests against this ServeRest URL instead of a local instance (e.g. https://serverest.dev)'
         required: false
         default: ''
 
@@ -16,46 +19,100 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
-    name: Lint, typecheck and API tests
+  checks:
+    name: Typecheck and lint
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    env:
-      API_BASE_URL: ${{ inputs.api_base_url }}
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-
       - run: npm ci
+      - run: npm run check
 
-      - name: Typecheck and lint
-        run: npm run check
-
-      - name: API tests
-        run: npm run test:api
-
-      - name: Upload HTML report
+  api:
+    name: API tests
+    needs: checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      API_BASE_URL: ${{ inputs.api_base_url }}
+      PLAYWRIGHT_BLOB_OUTPUT_NAME: report-api.zip
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run test:api
+      - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+        with:
+          name: blob-report-api
+          path: blob-report/
+          retention-days: 7
+
+  ui:
+    name: UI tests
+    needs: checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PLAYWRIGHT_BLOB_OUTPUT_NAME: report-ui.zip
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - run: npm run test:ui
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: blob-report-ui
+          path: blob-report/
+          retention-days: 7
+
+  report:
+    name: Merge and publish report
+    needs: [api, ui]
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: blob-report-*
+          path: all-blob-reports
+          merge-multiple: true
+      - name: Merge reports
+        run: npx playwright merge-reports --reporter html ./all-blob-reports
+      - uses: actions/upload-artifact@v4
         with:
           name: playwright-report
           path: playwright-report/
           retention-days: 14
-
-      - name: Prepare report for GitHub Pages
-        if: ${{ !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v3
+        if: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
         with:
           path: playwright-report/
 
-  publish-report:
-    name: Publish report to GitHub Pages
-    needs: test
-    if: ${{ !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+  publish:
+    name: Publish to GitHub Pages
+    needs: report
+    if: ${{ !cancelled() && needs.report.result == 'success' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
     permissions:
       pages: write

@@ -4,11 +4,13 @@ import { AccountApi } from '@src/ui/account-api';
 import { CatalogApi } from '@src/ui/catalog-api';
 import { AccountStatusPage } from '@src/ui/pages/account-status.page';
 import { CartPage } from '@src/ui/pages/cart.page';
+import { ContactUsPage } from '@src/ui/pages/contact-us.page';
 import { HomePage } from '@src/ui/pages/home.page';
 import { LoginPage } from '@src/ui/pages/login.page';
 import { ProductDetailsPage } from '@src/ui/pages/product-details.page';
 import { ProductsPage } from '@src/ui/pages/products.page';
 import { SignupPage } from '@src/ui/pages/signup.page';
+import { TestCasesPage } from '@src/ui/pages/test-cases.page';
 import type { Account } from '@src/ui/types';
 
 /**
@@ -32,6 +34,8 @@ interface UiFixtures {
   productsPage: ProductsPage;
   productDetailsPage: ProductDetailsPage;
   cartPage: CartPage;
+  contactUsPage: ContactUsPage;
+  testCasesPage: TestCasesPage;
 }
 
 export const test = base.extend<UiFixtures>({
@@ -68,6 +72,8 @@ export const test = base.extend<UiFixtures>({
   productsPage: async ({ page }, use) => use(new ProductsPage(page)),
   productDetailsPage: async ({ page }, use) => use(new ProductDetailsPage(page)),
   cartPage: async ({ page }, use) => use(new CartPage(page)),
+  contactUsPage: async ({ page }, use) => use(new ContactUsPage(page)),
+  testCasesPage: async ({ page }, use) => use(new TestCasesPage(page)),
 });
 
 export { expect } from '@playwright/test';

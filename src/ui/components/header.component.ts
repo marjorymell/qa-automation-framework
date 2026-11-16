@@ -18,7 +18,8 @@ export class Header {
 
   constructor(private readonly page: Page) {
     const nav = page.locator('.shop-menu');
-    this.logo = page.getByAltText('Website for automation practice');
+    // The logo's alt text differs between pages, so locate it by its container.
+    this.logo = page.locator('.logo img');
     this.loggedInAs = nav.locator('li', { hasText: 'Logged in as' });
   }
 
