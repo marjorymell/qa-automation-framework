@@ -27,7 +27,9 @@ export class Header {
     return this.page.locator('.shop-menu').getByRole('link', { name: item, exact: false });
   }
 
+  /** Clicks a menu link and waits until the new page has fully loaded, scripts included. */
   async goTo(item: NavItem): Promise<void> {
     await this.link(item).click();
+    await this.page.waitForLoadState('load');
   }
 }

@@ -43,9 +43,17 @@ export class ContactUsPage extends BasePage {
     if (contact.attachment) await this.attachment.setInputFiles(contact.attachment);
   }
 
-  /** Submits the form and accepts the site's "Press OK to proceed!" confirmation. */
+  /**
+   * Submits the form and accepts the site's "Press OK to proceed!" confirmation.
+   * The confirmation is wired up by a script once the page has loaded; without it the
+   * form would be posted directly and no success message shown.
+   */
   async submit(): Promise<void> {
-    this.page.once('dialog', (dialog) => dialog.accept());
-    await this.submitButton.click();
+    await this.page.waitForLoadState('load');
+    // The click only resolves once the dialog is handled, so accept it in parallel.
+    await Promise.all([
+      this.page.waitForEvent('dialog').then((dialog) => dialog.accept()),
+      this.submitButton.click(),
+    ]);
   }
 }
